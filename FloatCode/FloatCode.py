@@ -11,7 +11,7 @@ def setup_pins():
     i2c0 = I2C(0, sda=Pin(8), scl=Pin(9), freq=400000) # Initialize I2C pins for Pressure Sensor
     spi0 = SPI(0, baudrate=1000000, polarity=0, phase=0, sck=Pin(18), mosi=Pin(19), miso=Pin(16)) # Initialize SPI pins for SD Card Reader
     cs0 = Pin(17, Pin.OUT, value=1) # Initialize cs pin for SD Card Reader
-    adc1 = ADC()
+    adc1 = ADC(27)
 
     return uart0, i2c0, spi0, cs0, adc1
 
@@ -43,11 +43,40 @@ def calculate_depth(pressure_pa):
     return max(0, depth) # Return 0 if negative
 
 
-
-### Code for reading Ultrasonic Sensor data ###
+# Ultra sonic sensor
 def read_ultrasonic(uart):
     uart.read()  # flush stale buffer
 
+    # Wait up to 500ms for 4 bytes
+    t_start = time.ticks_ms()
+    while uart.any() < 4:
+        if time.ticks_diff(time.ticks_ms(), t_start) > 500:
+            return False  # timeout - nothing detected
+
+    # Sync to header byte
+    byte = uart.read(1)
+    if byte is None or byte[0] != 0xFF:
+        return False
+
+    # Read remaining 3 bytes
+    rest = uart.read(3)
+    if rest is None or len(rest) < 3:
+        return False
+
+    high, low, checksum = rest[0], rest[1], rest[2]
+
+    # Validate checksum
+    if (0xFF + high + low) & 0xFF != checksum:
+        print("Ultrasonic: checksum error")
+        return False
+
+    distance_cm = ((high << 8) | low) / 10.0
+
+    # Sensor valid range: 5–600cm
+    if not (50.0 <= distance_cm <= 600.0):  ###Modify when testing with real sensor###
+        return False
+
+    return True  # obstacle detected
  
 
 ### Code for using the sd card ###
@@ -63,14 +92,34 @@ def read_ultrasonic(uart):
 ### Surfacing (end) phase ###
 ### Code for using Ultrasonic Sensor data to see when it is clear to surface ###
 def scan_surface(uart):
-    if uart.any():
-        return True
-    return False
+    return 0
 
-#Just trying to see if it can be written differently
+
+"""
 #def scan_surface():
-#   data
-
+    data = read_ultrasonic(uart):
+   threshold = 100
+   if data:  
+       try: #If not empty
+           distance = int(data.decode().strip())
+           return distance < threshold
+       except: #If empty
+           return false
+   return false
+"""
+"""
+Could be written this way
+def scan_surface(uart, ice_threshold_cm=30):
+    for i in range(5):
+        raw = read_ultrasonic(uart)
+        if raw:
+            try:
+                distance_cm = int(raw.decode().strip()[1:]) / 10.0
+                return distance_cm <= ice_threshold_cm
+            except:
+                pass
+    return True  # Fail-safe: assume ice
+"""
 ### Main section ###
 def main():
     uart, i2c, spi, cs = setup_pins()
