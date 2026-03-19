@@ -3,7 +3,8 @@ import time # We need this in order to keep track of timestamps during the missi
 import os # Needed for reading/writing files to sd card
 import vfs
 import sdcard # Connects SD card to the Pico W using sdcard.py
-
+#Functions we need still:
+#
 
 ### Activate Pico W pins ###
 def setup_pins():
