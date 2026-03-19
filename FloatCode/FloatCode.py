@@ -112,7 +112,7 @@ def scan_surface(uart, ice_threshold_cm=30):
 """
 ### Main section ###
 def main():
-    uart, i2c, spi, cs = setup_pins()
+    uart, i2c, spi, cs, adc = setup_pins()
     setup_sd_card(spi, cs)
     
     # Open file for writing once at the start
