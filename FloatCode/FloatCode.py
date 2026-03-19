@@ -57,30 +57,30 @@ def read_ultrasonic(uart):
     t_start = time.ticks_ms()
     while uart.any() < 4:
         if time.ticks_diff(time.ticks_ms(), t_start) > 500:
-            return False  # timeout - nothing detected
+            return None  # timeout - nothing detected
 
     # Sync to header byte
     byte = uart.read(1)
     if byte is None or byte[0] != 0xFF:
-        return False
+        return None
 
     # Read remaining 3 bytes
     rest = uart.read(3)
     if rest is None or len(rest) < 3:
-        return False
+        return None
 
     high, low, checksum = rest[0], rest[1], rest[2]
 
     # Validate checksum
     if (0xFF + high + low) & 0xFF != checksum:
         print("Ultrasonic: checksum error")
-        return False
+        return None
 
     distance_cm = ((high << 8) | low) / 10.0
 
     # Sensor valid range: 5–600cm
     if not (50.0 <= distance_cm <= 600.0):  ###Modify when testing with real sensor###
-        return False
+        return None
     return distance_cm  # obstacle detected
  
 
