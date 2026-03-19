@@ -99,19 +99,6 @@ def scan_surface(uart):
 
 
 """
-#def scan_surface():
-    data = read_ultrasonic(uart):
-   threshold = 100
-   if data:  
-       try: #If not empty
-           distance = int(data.decode().strip())
-           return distance < threshold
-       except: #If empty
-           return false
-   return false
-"""
-"""
-Could be written this way
 def scan_surface(uart, ice_threshold_cm=30):
     for i in range(5):
         raw = read_ultrasonic(uart)
