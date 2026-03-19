@@ -1,8 +1,9 @@
-from machine import Pin, UART, I2C, SPI, ADC # This module allows us to set up the Pico W pins to specify I2C, UART, SPI, etc.
+from machine import Pin, UART, I2C, SPI, ADC, PWM # This module allows us to set up the Pico W pins to specify I2C, UART, SPI, etc.
 import time # We need this in order to keep track of timestamps during the mission
 import os # Needed for reading/writing files to sd card
 import vfs
 import sdcard # Connects SD card to the Pico W using sdcard.py
+
 
 ### Activate Pico W pins ###
 def setup_pins():
@@ -11,8 +12,11 @@ def setup_pins():
     spi0 = SPI(0, baudrate=1000000, polarity=0, phase=0, sck=Pin(18), mosi=Pin(19), miso=Pin(16)) # Initialize SPI pins for SD Card Reader
     cs0 = Pin(17, Pin.OUT, value=1) # Initialize cs pin for SD Card Reader
     adc1 = ADC(27)
+    pwm0 = PWM(Pin(14)) # PWM pin for peristaltic pump white (speed control) wire
+    pwm0.freq(20000) # Keep 20kHz frequency for speed control, change duty cycle rate later
+    pwm1 = PWM(Pin(15)) # PWM pin for peristaltic pump green (direction) wire
 
-    return uart0, i2c0, spi0, cs0, adc1
+    return uart0, i2c0, spi0, cs0, adc1, pwm0, pwm1
 
 def setup_sd_card(spi0, cs0):
     try:
