@@ -78,8 +78,7 @@ def read_ultrasonic(uart):
     # Sensor valid range: 5–600cm
     if not (50.0 <= distance_cm <= 600.0):  ###Modify when testing with real sensor###
         return False
-
-    return True  # obstacle detected
+    return distance_cm  # obstacle detected
  
 
 ### Code for using the sd card ###
