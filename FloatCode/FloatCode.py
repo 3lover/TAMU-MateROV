@@ -7,6 +7,9 @@ import sdcard # Connects SD card to the Pico W using sdcard.py
 #Functions we potentially need still:
 #1.) Function to direct the buoyancy engine to go down when detecting ice; actuate_buoyancy_engine()
 #2.) Function to send signals to the computer after recovery;
+#3.) Function to properly format data
+#4.) Function to send data to the sd card?
+
 
 ### Activate Pico W pins ###
 def setup_pins():
