@@ -110,6 +110,8 @@ def scan_surface(uart, ice_threshold_cm=30):
                 pass
     return True  # Fail-safe: assume ice
 """
+def actuate_buoyancy_engine():
+    print("Buoyancy engine activated")
 ### Main section ###
 def main():
     uart, i2c, spi, cs, adc = setup_pins()
