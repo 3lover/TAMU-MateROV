@@ -125,6 +125,8 @@ def main():
             # 1. Get Data
             pressure = read_pressure_sensor(i2c)
             depth = calculate_depth(pressure)
+            temp_raw = adc.read_u16()
+            print("ADC:", temp_raw)
             
             # 2. Write to SD
             f.write(f"Depth: {depth}\n")
