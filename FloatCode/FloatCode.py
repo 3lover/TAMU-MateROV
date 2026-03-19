@@ -97,6 +97,30 @@ def read_ultrasonic(uart):
 ### Code for using Ultrasonic Sensor data to see when it is clear to surface ###
 
 ### Need to edit this function it isn't done yet
+
+
+def actuate_buoyancy_engine(Speed_need, Direction):
+    pwm =  Pin(14), freq=20000  # WHITE - speed control
+    green = Pin(15, Pin.OUT)         # GREEN - direction
+
+    def forward(Direction):
+        green.init(Pin.OUT)
+        green.value(0)
+
+    def reverse(Direction):
+        green.init(Pin.IN)
+
+    def set_speed(Speed_need):
+      if Speed_need < 11:
+        pwm.duty_u16(0)
+      else:
+        pwm.duty_u16(int(Speed_need / 100 * 65535))
+    def stop():
+        set_speed(0)
+    if Speed_need == 0:
+        stop()
+
+
 def buoyancy_down_on_ice(uart, ice_threshold_cm=30):
     """
     Detects ice above using the ultrasonic sensor and moves buoyancy engine down.
