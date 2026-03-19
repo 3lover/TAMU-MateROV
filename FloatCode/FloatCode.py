@@ -102,6 +102,17 @@ def buoyancy_down_on_ice(uart, ice_threshold_cm=30):
         actuate_buoyancy_engine("down")
         return True
     return False
+### Need to edit this function it isn't done yet
+def determine_buoyancy_direction(depth, ice_detected, max_depth=10):
+    """
+    Decides whether the buoyancy engine should go up, down, or hold.
+    """
+    if ice_detected:
+        return "down"
+    elif depth >= max_depth:
+        return "up"
+    else:
+        return None
     
 def scan_surface(uart):
     return 0
