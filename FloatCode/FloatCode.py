@@ -190,10 +190,9 @@ def write_to_sd(file_obj, packet):
     
 ### Main section ###
 def main():
-    uart, i2c, spi, cs, adc = setup_pins()
+    uart, i2c, spi, cs, adc, pwm0, pwm1 = setup_pins()   # include PWM objects
     setup_sd_card(spi, cs)
     
-    # Open file for writing once at the start
     with open("/sd/mission_data.txt", "a") as f:
         while True:
             # 1. Get Data
@@ -202,16 +201,19 @@ def main():
             temp_raw = adc.read_u16()
             print("ADC:", temp_raw)
             
-            # 2. Write to SD
+            # 2. Logging, telemetry, and buoyancy logic
             timestamp = time.time()
-            f.write(f"{timestamp}, Depth: {depth}\n")
-            f.flush() # Forces the data onto the card physically
-            
-            # 3. Decision Logic
-            if depth > 10: # Example threshold
-                actuate_buoyancy_engine()
-            
-            time.sleep(5) # Wait 5 seconds
+            packet = format_data_packet(timestamp, depth, temp_raw)
+            write_to_sd(f, packet)
+            send_recovery_signal(uart, packet)
 
+            # Decide direction and actuate buoyancy
+            ice_detected = detect_ice(uart)  # pass uart
+            direction = determine_buoyancy_direction(depth, ice_detected)
+            if direction:
+                actuate_buoyancy_engine(pwm0, pwm1, 50, direction)  # example 50% speed
+            
+            # 3. Wait for next cycle
+            time.sleep(5)
 
 main()
