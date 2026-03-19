@@ -132,7 +132,8 @@ def main():
             print("ADC:", temp_raw)
             
             # 2. Write to SD
-            f.write(f"Depth: {depth}\n")
+            timestamp = time.time()
+            f.write(f"{timestamp}, Depth: {depth}\n")
             f.flush() # Forces the data onto the card physically
             
             # 3. Decision Logic
