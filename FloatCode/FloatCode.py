@@ -4,14 +4,6 @@ import os # Needed for reading/writing files to sd card
 import vfs
 import sdcard # Connects SD card to the Pico W using sdcard.py
 
-#Functions we potentially need still:
-#1.) Function to direct the buoyancy engine to go down when detecting ice; actuate_buoyancy_engine()?
-#1a.) Function for logic of direction of buoyancy engine to go?
-#2.) Function to send signals to the computer after recovery;
-#3.) Function to properly format data into packet; [EX01 1:51:42 UTC 9.8 kpa 1.00 meters]
-#4.) Function to send data to the sd card?
-
-
 ### Activate Pico W pins ###
 def setup_pins():
     uart0 = UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1)) # Initialize UART0 pins for Ultrasonic Sensor
