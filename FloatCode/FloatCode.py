@@ -4,7 +4,7 @@ import os # Needed for reading/writing files to sd card
 import vfs
 import sdcard # Connects SD card to the Pico W using sdcard.py
 #Functions we need still:
-#
+#1.) Function to direct the engine to go down when detecting ice
 
 ### Activate Pico W pins ###
 def setup_pins():
