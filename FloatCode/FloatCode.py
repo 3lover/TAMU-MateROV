@@ -91,6 +91,18 @@ def read_ultrasonic(uart):
 
 ### Surfacing (end) phase ###
 ### Code for using Ultrasonic Sensor data to see when it is clear to surface ###
+
+### Need to edit this function it isn't done yet
+def buoyancy_down_on_ice(uart, ice_threshold_cm=30):
+    """
+    Detects ice above using the ultrasonic sensor and moves buoyancy engine down.
+    """
+    distance = read_ultrasonic(uart)
+    if distance is not None and distance <= ice_threshold_cm:
+        actuate_buoyancy_engine("down")
+        return True
+    return False
+    
 def scan_surface(uart):
     return 0
 
