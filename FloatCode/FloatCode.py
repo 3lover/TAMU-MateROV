@@ -178,6 +178,16 @@ def format_data_packet(timestamp, depth, temp_raw):
     """
     return f"[EX01 {int(timestamp)} {depth:.2f}m {temp_raw}ADC]"
     
+def write_to_sd(file_obj, packet):
+    """
+    Writes the formatted packet to the SD card and flushes the buffer.
+    """
+    try:
+        file_obj.write(packet + "\n")
+        file_obj.flush()
+    except Exception as e:
+        print("Error writing to SD card:", e)
+    
 ### Main section ###
 def main():
     uart, i2c, spi, cs, adc = setup_pins()
