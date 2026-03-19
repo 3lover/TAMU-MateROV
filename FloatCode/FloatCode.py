@@ -142,6 +142,14 @@ def send_recovery_signal(uart, message):
         uart.write(message + "\n")
     except Exception as e:
         print("Error sending signal to computer:", e)
+        
+def format_data_packet(timestamp, depth, temp_raw):
+    """
+    Formats the sensor data into a standard packet for SD card or telemetry.
+    Example format: [EX01 1679123456 1.23m 12345ADC]
+    """
+    return f"[EX01 {int(timestamp)} {depth:.2f}m {temp_raw}ADC]"
+    
 ### Main section ###
 def main():
     uart, i2c, spi, cs, adc = setup_pins()
