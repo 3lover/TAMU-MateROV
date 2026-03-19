@@ -132,6 +132,16 @@ def scan_surface(uart, ice_threshold_cm=30):
 """
 def actuate_buoyancy_engine():
     print("Buoyancy engine activated")
+
+### Need to edit this function it isn't done yet
+def send_recovery_signal(uart, message):
+    """
+    Sends telemetry or status messages back to the computer via UART.
+    """
+    try:
+        uart.write(message + "\n")
+    except Exception as e:
+        print("Error sending signal to computer:", e)
 ### Main section ###
 def main():
     uart, i2c, spi, cs, adc = setup_pins()
