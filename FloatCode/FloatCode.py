@@ -30,6 +30,8 @@ def setup_sd_card(spi0, cs0):
         # 3. Mount it to the Pico's file system
         vfs.mount(vfs_obj, "/sd")
         print("SD Card successfully mounted at /sd")
+        if "/sd" not in os.listdir("/"):
+            print("SD mount failed")
     except Exception as e:
         print("SD Card Error:", e)
 
