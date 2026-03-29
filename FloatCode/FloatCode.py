@@ -18,7 +18,7 @@ def setup_pins():
 
     return uart0, i2c0, spi0, cs0, adc1, pwm0, pwm1
 
-def setup_sd_card(spi0, cs0):
+def setup_sd_card(spi0, cs0):                            #Connnected  
     try:
         # 1. Initialize the SD card driver
         sd = sdcard.SDCard(spi0, cs0)
@@ -33,14 +33,14 @@ def setup_sd_card(spi0, cs0):
         print("SD Card Error:", e)
 
 ### Code for reading Pressure Sensor data and converting it to depth ###
-def read_pressure_sensor(i2c0):
+def read_pressure_sensor(i2c0):                         # Connected
     # MS5837 Sensor Address
     SENSOR_ADDR = 0x76
     # Reset the sensor
     i2c0.writeto(SENSOR_ADDR, bytes([0x1E]))
     time.sleep(0.1)
 
-def calculate_depth(pressure_pa):
+def calculate_depth(pressure_pa):                         # Pressure in Pascals
     surface_pressure = 101325 # Pascals at sea level
     density = 1000
     gravity = 9.81
@@ -48,23 +48,23 @@ def calculate_depth(pressure_pa):
     return max(0, depth) # Return 0 if negative
 
 
-# Ultra sonic sensor
-def read_ultrasonic(uart):
-    uart.read()  # flush stale buffer
+# Ultra sonic sensor                         
+def read_ultrasonic(uart0):                                  # Ub
+    uart0.read()  # flush stale buffer
 
     # Wait up to 500ms for 4 bytes
     t_start = time.ticks_ms()
-    while uart.any() < 4:
+    while uart0.any() < 4:
         if time.ticks_diff(time.ticks_ms(), t_start) > 500:
             return None  # timeout - nothing detected
 
     # Sync to header byte
-    byte = uart.read(1)
+    byte = uart0.read(1)
     if byte is None or byte[0] != 0xFF:
         return None
 
     # Read remaining 3 bytes
-    rest = uart.read(3)
+    rest = uart0.read(3)
     if rest is None or len(rest) < 3:
         return None
 
@@ -81,7 +81,6 @@ def read_ultrasonic(uart):
     if not (50.0 <= distance_cm <= 600.0):  ###Modify when testing with real sensor###
         return None
     return distance_cm  # obstacle detected
- 
 
 ### Code for using the sd card ###
 
