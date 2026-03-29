@@ -33,12 +33,33 @@ def setup_sd_card(spi0, cs0):                            #Connnected
         print("SD Card Error:", e)
 
 ### Code for reading Pressure Sensor data and converting it to depth ###
-def read_pressure_sensor(i2c0):                         # Connected
-    # MS5837 Sensor Address
-    SENSOR_ADDR = 0x76
-    # Reset the sensor
-    i2c0.writeto(SENSOR_ADDR, bytes([0x1E]))
-    time.sleep(0.1)
+def ms5837_init(i2c):
+    i2c.writeto(0x76, bytes([0x1E]))
+    time.sleep_ms(10)
+    coeffs = []
+    for k in range(6):
+        i2c.writeto(0x76, bytes([0xA2 + k * 2]))
+        raw = i2c.readfrom(0x76, 2)
+        coeffs.append((raw[0] << 8) | raw[1])
+    return coeffs
+
+def _ms5837_read_raw(i2c, cmd):
+    i2c.writeto(0x76, bytes([cmd]))
+    time.sleep_ms(10)
+    i2c.writeto(0x76, bytes([0x00]))
+    d = i2c.readfrom(0x76, 3)
+    return (d[0] << 16) | (d[1] << 8) | d[2]
+
+def read_pressure_sensor(i2c, coeffs):
+    C1, C2, C3, C4, C5, C6 = coeffs
+    D1 = _ms5837_read_raw(i2c, 0x48)
+    D2 = _ms5837_read_raw(i2c, 0x58)
+    dT   = D2 - C5 * 256
+    TEMP = 2000 + dT * C6 // 8388608
+    OFF  = C2 * 65536 + (C4 * dT) // 128
+    SENS = C1 * 32768 + (C3 * dT) // 256
+    P    = (D1 * SENS // 2097152 - OFF) // 32768
+    return P * 10, TEMP / 100.0
 
 def calculate_depth(pressure_pa):                         # Pressure in Pascals
     surface_pressure = 101325 # Pascals at sea level
