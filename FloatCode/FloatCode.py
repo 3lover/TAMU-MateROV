@@ -60,6 +60,30 @@ def read_pressure_sensor(i2c, coeffs):
     SENS = C1 * 32768 + (C3 * dT) // 256
     P    = (D1 * SENS // 2097152 - OFF) // 32768
     return P * 10, TEMP / 100.0
+    
+def scan_surface(uart, samples=5, ice_threshold_cm=30):
+    """
+    Sweep the ultrasonic sensor multiple times and vote on whether
+    the surface is clear. Majority of readings must be obstacle-free
+    to return True (clear). Fail-safe: if no valid readings are
+    obtained at all, assumes blocked and returns False.
+    """
+    clear_count = 0
+    valid_count = 0
+    for _ in range(samples):
+        dist = read_ultrasonic(uart)
+        if dist is not None:
+            valid_count += 1
+            if dist > ice_threshold_cm:
+                clear_count += 1
+        time.sleep_ms(100)
+    if valid_count == 0:
+        print("[SCAN] No valid ultrasonic readings — assuming blocked")
+        return False
+    clear = clear_count > (valid_count // 2)
+    print("[SCAN] {}/{} readings clear — surface {}".format(
+        clear_count, valid_count, "CLEAR" if clear else "BLOCKED"))
+    return clear
 
 def calculate_depth(pressure_pa):                         # Pressure in Pascals
     surface_pressure = 101325 # Pascals at sea level
