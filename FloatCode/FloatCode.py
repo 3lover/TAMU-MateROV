@@ -210,30 +210,18 @@ def write_to_sd(file_obj, packet):
     
 ### Main section ###
 def main():
-    uart, i2c, spi, cs, adc, pwm0, pwm1 = setup_pins()   # include PWM objects
+    uart, i2c, spi, cs, adc, pwm0, pwm1 = setup_pins()
     setup_sd_card(spi, cs)
-    
+    coeffs = ms5837_init(i2c)
+
     with open("/sd/mission_data.txt", "a") as f:
         while True:
-            # 1. Get Data
-            pressure = read_pressure_sensor(i2c)
-            depth = calculate_depth(pressure)
-            temp_raw = adc.read_u16()
-            print("ADC:", temp_raw)
-            
-            # 2. Logging, telemetry, and buoyancy logic
+            pressure_pa, temp_c = read_pressure_sensor(i2c, coeffs)
+            depth_m = calculate_depth(pressure_pa)
             timestamp = time.time()
-            packet = format_data_packet(timestamp, depth, temp_raw)
+            packet = format_data_packet(timestamp, pressure_pa, depth_m, temp_c)
             write_to_sd(f, packet)
             send_recovery_signal(uart, packet)
-
-            # Decide direction and actuate buoyancy
-            ice_detected = detect_ice(uart)  # pass uart
-            direction = determine_buoyancy_direction(depth, ice_detected)
-            if direction:
-                actuate_buoyancy_engine(pwm0, pwm1, 50, direction)  # example 50% speed
-            
-            # 3. Wait for next cycle
+            print(packet)
             time.sleep(5)
-
 main()
