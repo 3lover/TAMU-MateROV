@@ -1,0 +1,31 @@
+from machine import *
+import os as os
+import sdcard as sdcard
+
+
+uart0 = UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1)) # Initialize UART0 pins for Ultrasonic Sensor
+i2c0 = I2C(0, sda=Pin(8), scl=Pin(9), freq=400000) # Initialize I2C pins for Pressure Sensor
+spi0 = SPI(0, baudrate=1000000, polarity=0, phase=0, sck=Pin(18), mosi=Pin(19), miso=Pin(16)) # Initialize SPI pins for SD Card Reader
+cs0 = Pin(17, Pin.OUT, value=1) # Initialize cs pin for SD Card Reader
+adc1 = ADC(27)
+pwm0 = PWM(Pin(14)) # PWM pin for peristaltic pump white (speed control) wire
+pwm0.freq(20000) # Keep 20kHz frequency for speed control, change duty cycle rate later
+pwm1 = PWM(Pin(15)) # PWM pin for peristaltic pump green (direction) w
+
+
+# Mounting SD card
+sd = sdcard.SDCard(spi0, cs0)
+os.mount(sd, "/sd")
+print("Mounted! Files:",os.listdir("/sd"))
+
+
+# Read a file
+with open("/sd/test.txt", "r") as f:
+    for line in f:
+        print(line.strip())
+
+# Write/log data
+with open("/sd/log.txt", "a") as f:
+    f.write("some data\n")
+# Unmount the SD card first
+os.umount("/sd")
