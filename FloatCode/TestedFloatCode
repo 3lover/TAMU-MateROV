@@ -1,10 +1,13 @@
 from machine import *
 import os as os
 import sdcard as sdcard
-#import bluetooth
-#import time
+import time as time
+import bluetooth
 
 help("modules")
+import sys
+print(sys.implementation)
+print("\n")
 
 uart0 = UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1)) # Initialize UART0 pins for Ultrasonic Sensor
 i2c0 = I2C(0, sda=Pin(8), scl=Pin(9), freq=400000) # Initialize I2C pins for Pressure Sensor
@@ -15,26 +18,91 @@ pwm0 = PWM(Pin(14)) # PWM pin for peristaltic pump white (speed control) wire
 pwm0.freq(20000) # Keep 20kHz frequency for speed control, change duty cycle rate later
 pwm1 = PWM(Pin(15)) # PWM pin for peristaltic pump green (direction) w
 
-os.listdir()
+try:
+    ### START SD CARD CODE ###
+    sd_mounted = False
+    try:
+        os.listdir() # list items on SD card in terminal
 
-# Mounting SD card
-sd = sdcard.SDCard(spi0, cs0)
-os.mount(sd, "/sd")
-print("Mounted! Files:",os.listdir("/sd"))
+        # Mounting SD card
+        sd = sdcard.SDCard(spi0, cs0)
+        os.mount(sd, "/sd")
+        print("Mounted! Files:",os.listdir("/sd"))
+
+        # Test Write/log data
+        testdata = 4 # test variable
+        with open("/sd/log.txt", "w") as f: 
+            f.write("some data\n")
+            f.write(str(testdata))
+
+        # Test read a file
+        with open("/sd/log.txt", "r") as f:
+            for line in f:
+                print(line.strip())
+        sd_mounted = True
+    except: # in case SD card has some error in try block
+        print("SD card could not mount") # error message to terminal
 
 
-# Write/log data
-with open("/sd/log.txt", "w") as f: 
-    f.write("some data\n")
+    print("end of SD card code")
+    ### END SD CARD CODE ###
+
+    ### START OF ULTRASONIC SENSOR CODE ###
+    
+    def read_ultrasonic():
+        while uart0.any():
+            uart0.read()
+        time.sleep_ms(100)
+        uart0.write(b'\x55')
+        timeout = time.ticks_ms()
+        while not uart0.any():
+            if time.ticks_diff(time.ticks_ms(), timeout) > 500:
+                return None
+        data = uart0.read(4)
+        if data is None or len(data) < 4:
+            return None
+        if data[0] != 0xFF:
+            return None
+        checksum = (data[0] + data[1] + data[2]) & 0xFF
+        if checksum != data[3]:
+            return None
+        return (data[1] << 8) | data[2]
+
+    if sd_mounted:
+        log_path = "/sd/ultrasonic_log.csv"
+        with open(log_path, "w") as f:
+            f.write("time_ms,distance_mm\n")
+
+        print("Logging ultrasonic data...")
+        start = time.ticks_ms()
+        try:
+            for q in range(5):
+                dist = read_ultrasonic()
+                elapsed = time.ticks_diff(time.ticks_ms(), start)
+                line = "{},{}\n".format(elapsed, dist if dist is not None else "None") #LINE PRINTING
+                with open(log_path, "a") as f:
+                    f.write(line)
+                print(line.strip())
+                time.sleep_ms(500)
+        except KeyboardInterrupt:
+            print("Stopped. Data saved to", log_path)
+            os.umount("/sd")
+    else:
+        print("Skipping ultrasonic logging — no SD card.")
+    ### END OF ULTRASONIC SENSOR CODE ###
+    
+    ### BLUETOOTH MODULE ###
+    ble = bluetooth.BLE() # create ble variable
+    ble.active(True) # active bluetooth
+    
+
+    ### END OF BLUETOOTH CODE ###
 
 
-# Read a file
-with open("/sd/log.txt", "r") as f:
-    for line in f:
-        print(line.strip())
-
-# Unmount the SD card first
-os.umount("/sd")
+    # Unmount the SD card at end of the program
+    os.umount("/sd")
+except: # if code fails, prepare to end program
+    os.umount("/sd")
 
 
 """
@@ -45,3 +113,6 @@ with open("/sd/log.txt", "a") as f: #appends file if it exists
 with open("/sd/log.txt", "r") as f: #reads file if it exists
 
 """
+
+
+
