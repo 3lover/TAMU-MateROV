@@ -109,6 +109,7 @@ fired when, power draw, and speed — so testing reads as a picture, not numbers
 | `Dockerfile` | Builds ArduSub SITL from source (firmware = ground truth) |
 | `sim_entry.sh` | Container entrypoint: starts SITL + a MAVProxy hub (multi-client) |
 | `docker-compose.yml` / `run_sitl.sh` | One-command build & launch |
+| `apply_oceanus_model.sh` + [`OCEANUS-VEHICLE-MODEL.md`](OCEANUS-VEHICLE-MODEL.md) | Patches SITL physics to our ROV's mass/size/thrust (edit + rebuild to update) |
 | `params/vectored_6dof.parm` | The custom-frame parameter set (also `param load`-able onto the real Navigator) |
 | `scripts/sitl_check.py` | Project 2 — heartbeat + IMU/attitude/depth stream |
 | `scripts/thruster_mixing.py` | Drive each DoF via RC override, read SERVO_OUTPUT_RAW |

@@ -33,6 +33,11 @@ ENV USER=sub
 # ArduPilot's own prereq installer (pulls MAVProxy, empy, build deps, etc.)
 RUN Tools/environment_install/install-prereqs-ubuntu.sh -y
 
+# Patch the SITL submarine model with Team Oceanus' ROV parameters so the
+# simulated dynamics approximate OUR vehicle, not the stock BlueROV2.
+COPY --chown=sub:sub apply_oceanus_model.sh /home/sub/apply_oceanus_model.sh
+RUN bash /home/sub/apply_oceanus_model.sh libraries/SITL/SIM_Submarine.h
+
 # Configure + build the ArduSub SITL binary
 RUN . ~/.profile && ./waf configure --board sitl && ./waf sub
 
