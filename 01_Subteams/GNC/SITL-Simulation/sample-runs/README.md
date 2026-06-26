@@ -8,6 +8,7 @@ rendered with `scripts/plot_telemetry.py`.
 |---|---|---|
 | `bluerov2-baseline_*` | ArduPilot stock BlueROV2 (10.5 kg, T200-class 51.5 N) | ~5.8 m |
 | `oceanus-td12_*` | Team Oceanus model: 22 kg + **Diamond Dynamics TD1.2** thrusters (24.5 N) — see [../OCEANUS-VEHICLE-MODEL.md](../OCEANUS-VEHICLE-MODEL.md) | ~3.5 m |
+| `current-drift_*` | Oceanus model holding depth while a **0.6 m/s current** is switched on — drifts ~14 m east (ConOps current-compensation test) | n/a |
 
 Same command, shallower dive: the Oceanus ROV is heavier **and** its TD1.2 thrusters
 push less than half a T200, so it's a slower, gentler vehicle. Top speed in the

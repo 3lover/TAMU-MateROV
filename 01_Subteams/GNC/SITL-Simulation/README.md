@@ -100,6 +100,22 @@ python3 scripts/plot_telemetry.py run1.csv run1.png "Dive + Forward Test"
 The dashboard shows the path travelled, depth profile, attitude, which thrusters
 fired when, power draw, and speed — so testing reads as a picture, not numbers.
 
+## Water-current testing (ConOps current compensation)
+
+Stock ArduSub SITL is still water, so we patch the model (`apply_current_model.sh`,
+baked into the image) so `SIM_WIND_SPD`/`SIM_WIND_DIR` act as a horizontal
+**water current**. Set it live — no rebuild:
+
+```bash
+python3 scripts/inject_current.py 0.4 90   # 0.4 m/s toward east (090)
+python3 scripts/inject_current.py 0        # back to still water
+python3 scripts/inject_current.py demo     # drift at 0 / 0.5 / 1.0 m/s
+```
+
+Unpowered, the ROV drifts toward the current at the current speed — so you can
+test drift detection and station-keeping / current-compensation control. See the
+`current-drift_*` example in [sample-runs/](sample-runs/).
+
 ---
 
 ## What's in here
@@ -115,6 +131,8 @@ fired when, power draw, and speed — so testing reads as a picture, not numbers
 | `scripts/thruster_mixing.py` | Drive each DoF via RC override, read SERVO_OUTPUT_RAW |
 | `scripts/log_telemetry.py` | Record depth/attitude/position/battery/thrusters to CSV for reports |
 | `scripts/plot_telemetry.py` | Turn a logged CSV into a shareable dashboard PNG (no 3D sim needed) |
+| `scripts/inject_current.py` | Add a water current (ConOps drift / current-compensation testing) |
+| `apply_current_model.sh` | Build-time patch making SIM_WIND act as a water current |
 
 ---
 
