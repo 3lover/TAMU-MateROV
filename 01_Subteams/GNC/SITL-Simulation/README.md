@@ -44,9 +44,10 @@ Independent **roll and pitch** (driven by the 4 vertical thrusters) confirm true
 | **`vectored_6dof` (BlueROV2 Heavy)** | **8 (4 vec + 4 vert)** | **6 — adds roll & pitch** | **2** |
 
 True, independently-controllable 6-DoF needs the **4 vertical thrusters** — with
-only 2 vertical thrusters you cannot actively control roll and pitch. We're
-targeting the **8-thruster `vectored_6dof`** frame. If the physical ROV ends up
-with 6 thrusters, switch to `vectored` and update the objective to "4-DoF."
+only 2 vertical thrusters you cannot actively control roll and pitch. The
+**8-thruster `vectored_6dof`** frame is the team's **final design** (confirmed
+June 2026; BOM = 4 CW + 4 CCW T200s, ICD wiring T1–T8). See
+[../Frame-Config-Decision.md](../Frame-Config-Decision.md).
 
 ---
 
