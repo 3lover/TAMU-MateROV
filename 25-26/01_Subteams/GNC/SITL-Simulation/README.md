@@ -15,12 +15,24 @@ physics sim, which wouldn't match the autopilot.
 
 ---
 
-## ⚠️ Status: scaffold — build it and validate on your machine
+## Status: validated end-to-end ✅
 
-These files were authored against ArduSub **Sub-4.5** but **have not yet been
-built/run** on a GNC machine. Treat the first `./run_sitl.sh` as the validation
-step. If the build or a frame default differs on your version, see
-[Troubleshooting](#troubleshooting). Report what you hit so we can pin it down.
+Built and run on macOS (Apple Silicon) with **ArduSub V4.5.7**. The sim boots
+into `Frame: VECTORED_6DOF`, telemetry streams, and all six degrees of freedom
+exercise the expected thrusters:
+
+| Command | horizontal 1-4 | vertical 5-8 |
+|---|---|---|
+| neutral | 1500 1500 1500 1500 | 1500 1500 1500 1500 |
+| forward | 1250 1250 1750 1750 | 1500 1500 1500 1500 |
+| lateral | 1750 1250 1750 1250 | 1500 1500 1500 1500 |
+| heave   | 1500 1500 1500 1500 | 1250 1250 1250 1250 |
+| yaw     | 1750 1250 1250 1750 | 1500 1500 1500 1500 |
+| roll    | 1500 1500 1500 1500 | 1750 1250 1750 1250 |
+| pitch   | 1500 1500 1500 1500 | 1250 1250 1750 1750 |
+
+Independent **roll and pitch** (driven by the 4 vertical thrusters) confirm true
+6-DoF — a 2-vertical-thruster frame could not do this.
 
 ---
 
@@ -49,15 +61,15 @@ with 6 thrusters, switch to `vectored` and update the objective to "4-DoF."
 
 ```bash
 cd "25-26/01_Subteams/GNC/SITL-Simulation"
-./run_sitl.sh            # first run builds the image (~20-40 min, ~3 GB), then launches
+./run_sitl.sh            # first run builds the image (~20-40 min, ~6 GB), then launches
 ```
 
 When it prints the MAVProxy banner, the sim is live:
 
 | Connect | Endpoint | For |
 |---|---|---|
-| GNC scripts / pymavlink | `tcp:127.0.0.1:5762` | telemetry + commands |
-| QGroundControl | `tcp:localhost:5763` | add **Application Settings → Comm Links → Add → TCP**, host `localhost`, port `5763` |
+| GNC scripts / pymavlink | `tcp:127.0.0.1:5780` | telemetry + commands |
+| QGroundControl | `tcp:localhost:5781` | add **Application Settings → Comm Links → Add → TCP**, host `localhost`, port `5781` |
 
 Then, in another terminal:
 
@@ -66,8 +78,8 @@ cd "25-26/01_Subteams/GNC/SITL-Simulation"
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r scripts/requirements.txt
 
-python3 scripts/sitl_check.py      # Project 2: heartbeat + live IMU / attitude / depth
-python3 scripts/motor_test.py      # cycle all 8 thrusters (verify frame mixing)
+python3 scripts/sitl_check.py        # Project 2: heartbeat + live IMU / attitude / depth
+python3 scripts/thruster_mixing.py   # drive each DoF, confirm 8-thruster frame mixing
 ```
 
 Stop the sim with `Ctrl-C` in the `run_sitl.sh` terminal.
@@ -83,7 +95,7 @@ Stop the sim with `Ctrl-C` in the `run_sitl.sh` terminal.
 | `docker-compose.yml` / `run_sitl.sh` | One-command build & launch |
 | `params/vectored_6dof.parm` | The custom-frame parameter set (also `param load`-able onto the real Navigator) |
 | `scripts/sitl_check.py` | Project 2 — heartbeat + IMU/attitude/depth stream |
-| `scripts/motor_test.py` | Actuate each of the 8 thrusters individually |
+| `scripts/thruster_mixing.py` | Drive each DoF via RC override, read SERVO_OUTPUT_RAW |
 
 ---
 
@@ -93,10 +105,13 @@ Stop the sim with `Ctrl-C` in the `run_sitl.sh` terminal.
    In SITL this is selected by `sim_vehicle.py -f vectored_6dof` (already wired in `sim_entry.sh`).
 2. **On hardware**, set the same in QGroundControl → **Vehicle Setup → Frame**, or
    load `params/vectored_6dof.parm` via **Parameters → Tools → Load from file**.
-3. **Confirm the mixing** with `scripts/motor_test.py`: each thruster 1–8 should
-   spin in turn. Cross-check the spin direction/position against
-   `GNC-ICD-01 Figure 4 (Thruster Configuration)` and the
+3. **Confirm the mixing** with `scripts/thruster_mixing.py`: each DoF should move
+   the expected group of thrusters (horizontals for surge/sway/yaw, verticals for
+   heave/roll/pitch). Cross-check against `GNC-ICD-01 Figure 4 (Thruster
+   Configuration)` and the
    [ArduSub thruster setup guide](https://www.ardusub.com/quick-start/vehicle-frame.html).
+   (Note: ArduSub's `MAV_CMD_DO_MOTOR_TEST` is unreliable in SITL — it times out —
+   so we exercise the mix via RC override instead.)
 4. **Tune** depth-hold / heading-hold (`PSC_POSZ_P`, `ATC_ANG_YAW_P`) in QGC
    against SITL, then carry the values to the Navigator.
 5. **Non-standard geometry?** If the thruster angles/positions differ from
@@ -113,7 +128,7 @@ Stop the sim with `Ctrl-C` in the `run_sitl.sh` terminal.
 - **`FRAME_CONFIG` not 2 after boot** — connect with QGC or MAVProxy and
   `param set FRAME_CONFIG 2`, then reboot the sim. Report it so we can pin the param file.
 - **Scripts can't connect** — make sure `run_sitl.sh` printed the MAVProxy banner
-  and ports 5762/5763 aren't taken (`lsof -i :5762`).
+  and ports 5780/5781 aren't taken (`lsof -i :5780`).
 - **Different ArduSub version** — rebuild with another release:
   `docker compose build --build-arg ARDUSUB_REF=Sub-4.1`.
 

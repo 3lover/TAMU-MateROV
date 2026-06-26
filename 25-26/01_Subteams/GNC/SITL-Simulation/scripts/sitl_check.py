@@ -6,13 +6,13 @@ simulated IMU, attitude, and depth/pressure so you can verify the GNC
 software <-> autopilot telemetry link end to end.
 
 Usage:
-    python3 sitl_check.py                       # default tcp:127.0.0.1:5762
+    python3 sitl_check.py                       # default tcp:127.0.0.1:5780
     python3 sitl_check.py udpin:0.0.0.0:14550   # any pymavlink connection string
 """
 import sys
 from pymavlink import mavutil
 
-conn = sys.argv[1] if len(sys.argv) > 1 else "tcp:127.0.0.1:5762"
+conn = sys.argv[1] if len(sys.argv) > 1 else "tcp:127.0.0.1:5780"
 print(f"Connecting to {conn} ...")
 master = mavutil.mavlink_connection(conn)
 master.wait_heartbeat()

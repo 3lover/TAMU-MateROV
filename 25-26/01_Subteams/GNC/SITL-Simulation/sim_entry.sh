@@ -3,7 +3,9 @@
 # fans the MAVLink stream out to two listening TCP ports so multiple clients
 # (QGroundControl + pymavlink scripts) can connect at once.
 set -euo pipefail
-cd /opt/ardupilot
+# Activate the ArduPilot python env the installer set up (venv / ~/.local/bin)
+. "$HOME/.profile" 2>/dev/null || true
+cd "$HOME/ardupilot"
 
 echo ">> Starting ArduSub SITL (frame: vectored_6dof)…"
 Tools/autotest/sim_vehicle.py -v ArduSub -f vectored_6dof \
@@ -16,10 +18,12 @@ for _ in $(seq 1 90); do
     sleep 1
 done
 
+# Note: the SITL binary itself occupies 5760-576x (its SERIALn TCP ports), so the
+# MAVProxy fan-out ports must live outside that range.
 echo ">> SITL up. Starting MAVProxy hub:"
-echo "     tcp:localhost:5762  ->  GNC scripts / pymavlink"
-echo "     tcp:localhost:5763  ->  QGroundControl (add a TCP comm link)"
+echo "     tcp:localhost:5780  ->  GNC scripts / pymavlink"
+echo "     tcp:localhost:5781  ->  QGroundControl (add a TCP comm link)"
 exec mavproxy.py --master tcp:127.0.0.1:5760 \
-    --out tcpin:0.0.0.0:5762 \
-    --out tcpin:0.0.0.0:5763 \
+    --out tcpin:0.0.0.0:5780 \
+    --out tcpin:0.0.0.0:5781 \
     --non-interactive

@@ -7,8 +7,8 @@ services:
     image: gnc-ardusub-sitl:latest
     container_name: ardusub-sitl
     ports:
-      - "5762:5762"   # MAVLink TCP -> pymavlink / GNC scripts
-      - "5763:5763"   # MAVLink TCP -> QGroundControl
+      - "5780:5780"   # MAVLink TCP -> pymavlink / GNC scripts
+      - "5781:5781"   # MAVLink TCP -> QGroundControl
     volumes:
       - ./params:/sim/params:ro
     stdin_open: true

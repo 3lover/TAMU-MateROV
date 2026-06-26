@@ -14,22 +14,33 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git sudo lsb-release tzdata ca-certificates netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /opt
+# ArduPilot's installer refuses to run as root, so build as a non-root user
+# with passwordless sudo (the installer uses sudo internally for apt).
+RUN useradd -m -s /bin/bash sub \
+    && echo "sub ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/sub
+USER sub
+
+WORKDIR /home/sub
 RUN git clone --depth 1 -b ${ARDUSUB_REF} https://github.com/ArduPilot/ardupilot.git
-WORKDIR /opt/ardupilot
+WORKDIR /home/sub/ardupilot
 RUN git submodule update --init --recursive --depth 1
 
+# Docker RUN shells aren't login shells, so $USER/$HOME are unset — the installer
+# needs them (e.g. `usermod -aG dialout $USER`, pip --user into $HOME/.local).
+ENV HOME=/home/sub
+ENV USER=sub
+
 # ArduPilot's own prereq installer (pulls MAVProxy, empy, build deps, etc.)
-RUN USER=root Tools/environment_install/install-prereqs-ubuntu.sh -y
+RUN Tools/environment_install/install-prereqs-ubuntu.sh -y
 
 # Configure + build the ArduSub SITL binary
-RUN . /root/.profile && ./waf configure --board sitl && ./waf sub
+RUN . ~/.profile && ./waf configure --board sitl && ./waf sub
 
-ENV PATH="/opt/ardupilot/Tools/autotest:/root/.local/bin:${PATH}"
+ENV PATH="/home/sub/ardupilot/Tools/autotest:/home/sub/.local/bin:${PATH}"
 
-COPY sim_entry.sh /sim_entry.sh
-RUN chmod +x /sim_entry.sh
+COPY --chown=sub:sub sim_entry.sh /home/sub/sim_entry.sh
+RUN chmod +x /home/sub/sim_entry.sh
 
-#  5762 -> pymavlink / GNC scripts      5763 -> QGroundControl
-EXPOSE 5762 5763
-ENTRYPOINT ["/sim_entry.sh"]
+#  5780 -> pymavlink / GNC scripts      5781 -> QGroundControl
+EXPOSE 5780 5781
+ENTRYPOINT ["/home/sub/sim_entry.sh"]
