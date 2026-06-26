@@ -12,8 +12,8 @@ numbers so the simulated **dynamics approximate our ROV**, via
 
 | Parameter | Value | Source | Confidence |
 |---|---|---|---|
-| Thrusters | 8 (vectored_6dof) | BOM (4 CW + 4 CCW T200), GNC-ICD-01 wiring | **real** |
-| Thrust / thruster | 51.48 N | T200 @ full (~5.25 kgf) — matches BOM | **real** |
+| Thrusters | 8 (vectored_6dof) | 4 CW + 4 CCW Diamond Dynamics TD1.2, GNC-ICD-01 wiring | **real** |
+| Thrust / thruster | 24.5 N | Diamond Dynamics **TD1.2** max forward ~2.5 kgf (range 1.2–2.5 kgf; Technical Report + manufacturer) | **real** |
 | Mass (`weight`) | 22.0 kg | design targets: <35 hard / <25 / <18 (TMS reqs, F&P "25 kg max") | **target — not measured** |
 | Length | 0.60 m | "<1 m any dimension" req; 400 mm enclosure/chassis | estimate |
 | Width | 0.50 m | same | estimate |
