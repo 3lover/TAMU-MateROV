@@ -85,6 +85,21 @@ python3 scripts/thruster_mixing.py   # drive each DoF, confirm 8-thruster frame 
 
 Stop the sim with `Ctrl-C` in the `run_sitl.sh` terminal.
 
+## Capturing & presenting results
+
+No 3D viewer needed — record a run and turn it into one shareable figure:
+
+```bash
+# 1. start logging in one terminal (depth, attitude, position, power, thrusters)
+python3 scripts/log_telemetry.py tcp:127.0.0.1:5780 run1.csv 10
+# 2. fly the ROV (QGC joysticks, or thruster_mixing.py) — Ctrl-C the logger when done
+# 3. render a dashboard PNG for the test report / presentation
+python3 scripts/plot_telemetry.py run1.csv run1.png "Dive + Forward Test"
+```
+
+The dashboard shows the path travelled, depth profile, attitude, which thrusters
+fired when, power draw, and speed — so testing reads as a picture, not numbers.
+
 ---
 
 ## What's in here
@@ -98,6 +113,7 @@ Stop the sim with `Ctrl-C` in the `run_sitl.sh` terminal.
 | `scripts/sitl_check.py` | Project 2 — heartbeat + IMU/attitude/depth stream |
 | `scripts/thruster_mixing.py` | Drive each DoF via RC override, read SERVO_OUTPUT_RAW |
 | `scripts/log_telemetry.py` | Record depth/attitude/position/battery/thrusters to CSV for reports |
+| `scripts/plot_telemetry.py` | Turn a logged CSV into a shareable dashboard PNG (no 3D sim needed) |
 
 ---
 
