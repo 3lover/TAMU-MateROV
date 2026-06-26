@@ -97,6 +97,7 @@ Stop the sim with `Ctrl-C` in the `run_sitl.sh` terminal.
 | `params/vectored_6dof.parm` | The custom-frame parameter set (also `param load`-able onto the real Navigator) |
 | `scripts/sitl_check.py` | Project 2 — heartbeat + IMU/attitude/depth stream |
 | `scripts/thruster_mixing.py` | Drive each DoF via RC override, read SERVO_OUTPUT_RAW |
+| `scripts/log_telemetry.py` | Record depth/attitude/position/battery/thrusters to CSV for reports |
 
 ---
 
