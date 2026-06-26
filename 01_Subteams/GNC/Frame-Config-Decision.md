@@ -8,7 +8,7 @@
 | Source | Evidence |
 |---|---|
 | GNC-ICD-01, Fig. 4 (wiring) | T1–T8 → ESC 1–8 → PWM channels 1–8; 3 servos on channels 14–16 |
-| BOM | 4 CW + 4 CCW T200 thrusters = 8 (torque-balanced pairs) |
+| Thrusters | 4 CW + 4 CCW **Diamond Dynamics TD1.2** = 8 (torque-balanced pairs; ~2.5 kgf max each) |
 | CAD | `Horizontal Mount` + `Vertical Mount` parts; `Thruster Configuration Assembly.SLDASM` |
 | Hardware | Navigator flight controller + Pi 5 + BlueOS + ArduSub |
 
