@@ -38,6 +38,11 @@ RUN Tools/environment_install/install-prereqs-ubuntu.sh -y
 COPY --chown=sub:sub apply_oceanus_model.sh /home/sub/apply_oceanus_model.sh
 RUN bash /home/sub/apply_oceanus_model.sh libraries/SITL/SIM_Submarine.h
 
+# Make SIM_WIND_SPD/DIR act as a water current (stock SITL doesn't apply it to
+# the sub) so we can test ConOps current-compensation / drift.
+COPY --chown=sub:sub apply_current_model.sh /home/sub/apply_current_model.sh
+RUN bash /home/sub/apply_current_model.sh libraries/SITL/SIM_Submarine.cpp
+
 # Configure + build the ArduSub SITL binary
 RUN . ~/.profile && ./waf configure --board sitl && ./waf sub
 
