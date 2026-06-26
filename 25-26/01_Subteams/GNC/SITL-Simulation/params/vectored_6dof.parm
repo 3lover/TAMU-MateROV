@@ -1,0 +1,20 @@
+# Custom 6-DoF frame parameters — Team Oceanus ROV
+# Frame: BlueROV2 "Heavy" geometry = 4 vectored horizontal + 4 vertical thrusters
+# (the vectored_6dof sim frame loads these automatically; this file is the
+#  reference set to `param load` onto the real Navigator via QGroundControl.)
+
+FRAME_CONFIG     2      # 2 = Vectored_6DOF  (independent surge/sway/heave/roll/pitch/yaw)
+
+# --- SIM ONLY ---------------------------------------------------------------
+# Skip prearm checks so you can arm/dive in SITL without GPS/compass fuss.
+# RE-ENABLE (set to 1) before touching real hardware.
+ARMING_CHECK     0
+
+# --- Pilot limits (gentle starting points) ----------------------------------
+PILOT_SPEED_UP   50
+PILOT_SPEED_DN   50
+
+# --- Autopilot assists used in the mission (Depth Hold / Heading Hold) -------
+# Starting points only — tune in QGroundControl against SITL, then port to HW.
+PSC_POSZ_P       1.0    # depth-hold position gain   (cf. kp_Depth in pseudocode)
+ATC_ANG_YAW_P    0.5    # heading-hold yaw gain      (cf. kp_Yaw   in pseudocode)

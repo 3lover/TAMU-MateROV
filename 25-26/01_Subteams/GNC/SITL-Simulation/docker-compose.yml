@@ -1,0 +1,15 @@
+services:
+  ardusub-sitl:
+    build:
+      context: .
+      args:
+        ARDUSUB_REF: Sub-4.5
+    image: gnc-ardusub-sitl:latest
+    container_name: ardusub-sitl
+    ports:
+      - "5762:5762"   # MAVLink TCP -> pymavlink / GNC scripts
+      - "5763:5763"   # MAVLink TCP -> QGroundControl
+    volumes:
+      - ./params:/sim/params:ro
+    stdin_open: true
+    tty: true
