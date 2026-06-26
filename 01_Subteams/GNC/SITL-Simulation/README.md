@@ -60,7 +60,7 @@ with 6 thrusters, switch to `vectored` and update the objective to "4-DoF."
 ## Quick start
 
 ```bash
-cd "25-26/01_Subteams/GNC/SITL-Simulation"
+cd "01_Subteams/GNC/SITL-Simulation"
 ./run_sitl.sh            # first run builds the image (~20-40 min, ~6 GB), then launches
 ```
 
@@ -74,7 +74,7 @@ When it prints the MAVProxy banner, the sim is live:
 Then, in another terminal:
 
 ```bash
-cd "25-26/01_Subteams/GNC/SITL-Simulation"
+cd "01_Subteams/GNC/SITL-Simulation"
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r scripts/requirements.txt
 
