@@ -130,6 +130,25 @@ constant 0.4 m/s current (the integral term removes the proportional droop), and
 the `current-compensation_*` and `variable-current_*` samples in
 [sample-runs/](sample-runs/).
 
+## Servo control architecture (Goal 2)
+
+The manipulator servos are on PWM channels **14-16** (GNC-ICD-01). They default to
+`SERVOn_FUNCTION = 0` (Disabled), which lets the GCS drive them directly with
+`MAV_CMD_DO_SET_SERVO` — no reboot or reconfig:
+
+```bash
+python3 scripts/servo_control.py gripper open       # ch14 -> 1900
+python3 scripts/servo_control.py 14 deg 90          # angle command
+python3 scripts/servo_control.py 15 sweep           # exercise a channel
+python3 scripts/servo_test.py tcp:127.0.0.1:5780 14 40   # latency + precision -> report
+```
+
+`servo_test.py` produces the **Goal 2 test report** (`sample-runs/servo-control_report.md`):
+command-path latency **~10 ms** (mean) and **0 µs** command error in SITL.
+
+> SITL models the command/firmware path, not mechanical servo travel or physical
+> positional error — measure those on the bench and add to the latency above.
+
 ---
 
 ## What's in here
@@ -147,6 +166,8 @@ the `current-compensation_*` and `variable-current_*` samples in
 | `scripts/plot_telemetry.py` | Turn a logged CSV into a shareable dashboard PNG (no 3D sim needed) |
 | `scripts/inject_current.py` | Add a water current (ConOps drift / current-compensation testing) |
 | `scripts/station_keeping.py` | PID position-hold that counters the current (ConOps current compensation) |
+| `scripts/servo_control.py` | Drive the manipulator servos (ch 14-16) via MAV_CMD_DO_SET_SERVO |
+| `scripts/servo_test.py` | Servo latency + precision test → CSV, chart, report (Goal 2) |
 | `apply_current_model.sh` | Build-time patch making SIM_WIND act as a water current |
 
 ---

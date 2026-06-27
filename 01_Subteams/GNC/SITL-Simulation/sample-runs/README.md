@@ -11,6 +11,7 @@ rendered with `scripts/plot_telemetry.py`.
 | `current-drift_*` | Oceanus model holding depth while a **0.6 m/s current** is switched on — drifts ~14 m east (ConOps current-compensation test) | n/a |
 | `current-compensation_*` | `station_keeping.py` PID vs a **0.4 m/s current**: drifts ~3.9 m during a no-control phase, then recovers to within ~0.2 m and holds | n/a |
 | `variable-current_*` | `station_keeping.py` (tuned) vs a **random current** that changes every ~3–4 s (13 changes): holds **mean 0.12 m / max 0.31 m**. `_response.png` overlays the disturbance and the position error | n/a |
+| `servo-control*` | **Goal 2** servo test on ch 14: command-path latency ~10 ms mean, 0 µs precision error. `_report.md` is the test report, `.png` the latency/precision chart, `.csv` the raw data | n/a |
 
 Same command, shallower dive: the Oceanus ROV is heavier **and** its TD1.2 thrusters
 push less than half a T200, so it's a slower, gentler vehicle. Top speed in the
