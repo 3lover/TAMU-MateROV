@@ -124,9 +124,11 @@ python3 scripts/inject_current.py 0.4 90    # add a 0.4 m/s current
 python3 scripts/station_keeping.py          # hold position against it
 ```
 
-In testing it holds to ~**0.01 m** steady-state against a 0.4 m/s current (the
-integral term removes the proportional droop). The `current-compensation_*`
-sample shows a drift-then-recover run: ~3.9 m drift, recovered to within ~0.2 m.
+Tuned gains (Kp=440, Kd=230, Ki=210) hold to ~**0.01 m** steady-state against a
+constant 0.4 m/s current (the integral term removes the proportional droop), and
+**mean ~0.12 m** against a *random* current that changes every few seconds. See
+the `current-compensation_*` and `variable-current_*` samples in
+[sample-runs/](sample-runs/).
 
 ---
 
