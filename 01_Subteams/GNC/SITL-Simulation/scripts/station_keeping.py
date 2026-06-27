@@ -20,10 +20,10 @@ from pymavlink import mavutil
 
 conn = sys.argv[1] if len(sys.argv) > 1 else "tcp:127.0.0.1:5781"
 duration = float(sys.argv[2]) if len(sys.argv) > 2 else 30.0
-KP = float(sys.argv[3]) if len(sys.argv) > 3 else 260.0   # PWM per metre of error
-KD = float(sys.argv[4]) if len(sys.argv) > 4 else 160.0   # PWM per (m/s) of closing speed
-KI = float(sys.argv[5]) if len(sys.argv) > 5 else 90.0    # PWM per (m·s) accumulated error
-LIMIT = 350                                               # max PWM offset from 1500
+KP = float(sys.argv[3]) if len(sys.argv) > 3 else 440.0   # PWM per metre of error
+KD = float(sys.argv[4]) if len(sys.argv) > 4 else 230.0   # PWM per (m/s) of closing speed
+KI = float(sys.argv[5]) if len(sys.argv) > 5 else 210.0   # PWM per (m·s) accumulated error
+LIMIT = 400                                               # max PWM offset from 1500
 I_LIMIT = 300                                             # anti-windup clamp on the integral term
 SUB_MODE_DEPTH_HOLD = 2
 
