@@ -116,6 +116,18 @@ Unpowered, the ROV drifts toward the current at the current speed — so you can
 test drift detection and station-keeping / current-compensation control. See the
 `current-drift_*` example in [sample-runs/](sample-runs/).
 
+**Current compensation** — `station_keeping.py` is a PID position-hold (NED error
+→ forward/lateral thrust, depth held by the autopilot) that cancels the drift:
+
+```bash
+python3 scripts/inject_current.py 0.4 90    # add a 0.4 m/s current
+python3 scripts/station_keeping.py          # hold position against it
+```
+
+In testing it holds to ~**0.01 m** steady-state against a 0.4 m/s current (the
+integral term removes the proportional droop). The `current-compensation_*`
+sample shows a drift-then-recover run: ~3.9 m drift, recovered to within ~0.2 m.
+
 ---
 
 ## What's in here
@@ -132,6 +144,7 @@ test drift detection and station-keeping / current-compensation control. See the
 | `scripts/log_telemetry.py` | Record depth/attitude/position/battery/thrusters to CSV for reports |
 | `scripts/plot_telemetry.py` | Turn a logged CSV into a shareable dashboard PNG (no 3D sim needed) |
 | `scripts/inject_current.py` | Add a water current (ConOps drift / current-compensation testing) |
+| `scripts/station_keeping.py` | PID position-hold that counters the current (ConOps current compensation) |
 | `apply_current_model.sh` | Build-time patch making SIM_WIND act as a water current |
 
 ---
