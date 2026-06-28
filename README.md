@@ -16,10 +16,10 @@ monorepo — design, code, and documentation, organized by subteam.
 | Subteam | Focus |
 |---|---|
 | **GNC** — Guidance, Navigation & Control | Control software, ArduSub SITL simulation, photogrammetry |
-| **EPS** — Electrical Power Systems | Power distribution, PCB design |
-| **C&C** — Code & Controls | ROV & float code, software architecture |
-| **F&P** — Floats & Propulsion | Propellers, fluid/structural analysis (CFD/FEA) |
-| **TMS** — Mechanical Systems | Chassis, frame, claw, and float CAD |
+| **EPS** | Power distribution, PCB design |
+| **C&C** | ROV & float code, software architecture |
+| **F&P** | Propellers, fluid/structural analysis (CFD/FEA) |
+| **TMS** | Chassis, frame, claw, and float CAD |
 
 Each subteam's plans and notes live under [`01_Subteams/`](01_Subteams/).
 
